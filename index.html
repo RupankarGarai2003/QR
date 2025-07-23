@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UPI QR Code Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 250px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    #qrcode {
+      margin-top: 30px;
+    }
+    #downloadBtn {
+      display: none;
+      margin-top: 10px;
+      background-color: #007BFF;
+    }
+  </style>
+</head>
+<body>
+  <h1>UPI QR Code Generator</h1>
+
+  <input type="text" id="upiId" placeholder="Enter your UPI ID" />
+  <input type="number" id="amount" placeholder="Enter amount (INR)" />
+  <br />
+  <button onclick="generateQR()">Generate QR Code</button>
+
+  <div id="qrcode"></div>
+  <button id="downloadBtn" onclick="downloadQR()">Download QR Code</button>
+
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    function generateQR() {
+      const upiId = document.getElementById('upiId').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+
+      if (!upiId || !amount) {
+        alert('Please enter both UPI ID and amount');
+        return;
+      }
+
+      const upiUrl = `upi://pay?pa=${upiId}&pn=Merchant&am=${amount}&cu=INR`;
+
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = '';
+      document.getElementById('downloadBtn').style.display = 'none';
+
+      new QRCode(qrContainer, {
+        text: upiUrl,
+        width: 256,
+        height: 256
+      });
+
+      setTimeout(() => {
+        document.getElementById('downloadBtn').style.display = 'inline-block';
+      }, 500);
+    }
+
+    function downloadQR() {
+      const qrCanvas = document.querySelector('#qrcode canvas');
+      const imgData = qrCanvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = imgData;
+      a.download = 'upi-qr-code.png';
+      a.click();
+    }
+  </script>
+</body>
+</html>
